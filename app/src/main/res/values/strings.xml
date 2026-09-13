@@ -4,6 +4,7 @@
     <string name="ignore_battery_optim">Exclure l\'app des optimisations de batterie</string>
     <string name="battery_already_ignored">Déjà exclue des optimisations de batterie</string>
     <string name="apps_list_title">Applications installées</string>
+    <string name="search_hint">Rechercher une application</string>
     <string name="label_wifi">Wi-Fi</string>
     <string name="label_mobile">Data</string>
     <string name="vpn_permission_denied">Autorisation VPN refusée : le pare-feu ne peut pas démarrer</string>
