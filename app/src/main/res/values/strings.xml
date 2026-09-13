@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">MamyDataGuard</string>
+    <string name="enable_firewall">Activer le pare-feu</string>
+    <string name="ignore_battery_optim">Exclure l\'app des optimisations de batterie</string>
+    <string name="battery_already_ignored">Déjà exclue des optimisations de batterie</string>
+    <string name="apps_list_title">Applications installées</string>
+    <string name="label_wifi">Wi-Fi</string>
+    <string name="label_mobile">Data</string>
+    <string name="vpn_permission_denied">Autorisation VPN refusée : le pare-feu ne peut pas démarrer</string>
+
+    <string name="channel_service_name">Service pare-feu</string>
+    <string name="channel_service_desc">Notification permanente indiquant que le pare-feu est actif</string>
+    <string name="channel_alerts_name">Alertes de blocage</string>
+    <string name="channel_alerts_desc">Notifie quand une app tente une connexion bloquée</string>
+
+    <string name="notif_service_running">Pare-feu actif — trafic filtré en arrière-plan</string>
+    <string name="notif_blocked_title">Connexion bloquée</string>
+    <string name="notif_blocked_text">%1$s a tenté de se connecter à Internet</string>
+</resources>
