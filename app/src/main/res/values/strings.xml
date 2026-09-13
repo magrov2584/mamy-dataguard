@@ -9,6 +9,11 @@
     <string name="label_mobile">Data</string>
     <string name="vpn_permission_denied">Autorisation VPN refusée : le pare-feu ne peut pas démarrer</string>
 
+    <string name="wifi_allowed_desc">Wi-Fi autorisé, appuyer pour bloquer</string>
+    <string name="wifi_blocked_desc">Wi-Fi bloqué, appuyer pour autoriser</string>
+    <string name="mobile_allowed_desc">Données mobiles autorisées, appuyer pour bloquer</string>
+    <string name="mobile_blocked_desc">Données mobiles bloquées, appuyer pour autoriser</string>
+
     <string name="channel_service_name">Service pare-feu</string>
     <string name="channel_service_desc">Notification permanente indiquant que le pare-feu est actif</string>
     <string name="channel_alerts_name">Alertes de blocage</string>

@@ -149,6 +149,7 @@ class MainActivity : AppCompatActivity() {
                     blockOnMobile = blockMobile
                 )
             }
+            .filter { !it.isSystemApp } // n'afficher que les applications installées par l'utilisateur
             .sortedBy { it.label.lowercase() }
 
         allApps = appInfos

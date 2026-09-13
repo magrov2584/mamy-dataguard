@@ -51,10 +51,16 @@
             android:text="@string/label_wifi"
             android:textSize="10sp" />
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/switchWifi"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        <ImageView
+            android:id="@+id/iconWifi"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_wifi_allowed" />
     </LinearLayout>
 
     <LinearLayout
@@ -62,7 +68,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center"
-        android:layout_marginStart="12dp">
+        android:layout_marginStart="4dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -70,10 +76,16 @@
             android:text="@string/label_mobile"
             android:textSize="10sp" />
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/switchMobile"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        <ImageView
+            android:id="@+id/iconMobile"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_mobile_allowed" />
     </LinearLayout>
 
 </LinearLayout>

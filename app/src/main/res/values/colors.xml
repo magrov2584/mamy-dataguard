@@ -2,4 +2,9 @@
     <color name="mamy_primary">#1565C0</color>
     <color name="mamy_primary_dark">#0D47A1</color>
     <color name="mamy_accent">#26A69A</color>
+
+    <!-- Icônes d'état Wi-Fi / Data (style NetGuard) -->
+    <color name="icon_allowed">#2E7D32</color>
+    <color name="icon_blocked_base">#9E9E9E</color>
+    <color name="icon_blocked_line">#D32F2F</color>
 </resources>
