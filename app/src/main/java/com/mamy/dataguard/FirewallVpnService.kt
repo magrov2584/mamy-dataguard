@@ -64,15 +64,15 @@ class FirewallVpnService : VpnService() {
     }
 
     private fun startFirewall() {
-    val wasAlreadyRunning = running.getAndSet(true)
-    if (!wasAlreadyRunning) {
-        prefsManager.setFirewallEnabled(true)
-        registerNetworkCallback()
+        val wasAlreadyRunning = running.getAndSet(true)
+        if (!wasAlreadyRunning) {
+            prefsManager.setFirewallEnabled(true)
+            registerNetworkCallback()
+        }
+        // Toujours reconstruire le tunnel : c'est ce qui applique les nouvelles
+        // règles quand une app est cochée/décochée pendant que le service tourne déjà.
+        rebuildTunnel()
     }
-    // Toujours reconstruire le tunnel : c'est ce qui applique les nouvelles
-    // règles quand une app est cochée/décochée pendant que le service tourne déjà.
-    rebuildTunnel()
-}
 
     private fun stopFirewall() {
         running.set(false)
@@ -83,7 +83,11 @@ class FirewallVpnService : VpnService() {
         stopSelf()
     }
 
-    /** Écoute les changements de réseau actif (bascule Wi-Fi <-> Data Mobile). */
+    /** Suivi des réseaux physiques disponibles (Wi-Fi / Data Mobile), indépendamment
+     *  du "réseau actif" au sens Android — qui devient notre propre tunnel VPN dès
+     *  qu'il est établi, ce qui rendrait toute détection basée sur activeNetwork fausse. */
+    private val availableNetworks = ConcurrentHashMap<Network, NetworkCapabilities>()
+
     private fun registerNetworkCallback() {
         val request = NetworkRequest.Builder()
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
@@ -91,14 +95,27 @@ class FirewallVpnService : VpnService() {
 
         networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onCapabilitiesChanged(network: Network, caps: NetworkCapabilities) {
+                if (caps.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) return
+                availableNetworks[network] = caps
                 rebuildTunnel()
             }
 
             override fun onLost(network: Network) {
+                availableNetworks.remove(network)
                 rebuildTunnel()
             }
         }
         connectivityManager.registerNetworkCallback(request, networkCallback as ConnectivityManager.NetworkCallback)
+
+        // Pré-remplir avec l'état réseau déjà connu, pour que le tout premier
+        // rebuildTunnel() (appelé juste après) dispose déjà des bonnes infos,
+        // sans attendre le premier callback asynchrone.
+        connectivityManager.allNetworks.forEach { net ->
+            val caps = connectivityManager.getNetworkCapabilities(net)
+            if (caps != null && !caps.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
+                availableNetworks[net] = caps
+            }
+        }
     }
 
     private fun unregisterNetworkCallback() {
@@ -109,19 +126,14 @@ class FirewallVpnService : VpnService() {
             }
         }
         networkCallback = null
+        availableNetworks.clear()
     }
 
-    private fun isOnWifi(): Boolean {
-        val active = connectivityManager.activeNetwork ?: return false
-        val caps = connectivityManager.getNetworkCapabilities(active) ?: return false
-        return caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-    }
+    private fun isOnWifi(): Boolean =
+        availableNetworks.values.any { it.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) }
 
-    private fun isOnMobile(): Boolean {
-        val active = connectivityManager.activeNetwork ?: return false
-        val caps = connectivityManager.getNetworkCapabilities(active) ?: return false
-        return caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
-    }
+    private fun isOnMobile(): Boolean =
+        availableNetworks.values.any { it.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) }
 
     /**
      * Recalcule la liste des applications à bloquer pour le réseau actuel
@@ -153,7 +165,6 @@ class FirewallVpnService : VpnService() {
             .addRoute("0.0.0.0", 0)
             .addDnsServer("8.8.8.8")
             .setMtu(1500)
-            .setBlocking(false)
 
         var addedAtLeastOne = false
         for (pkg in blockedPackages) {
