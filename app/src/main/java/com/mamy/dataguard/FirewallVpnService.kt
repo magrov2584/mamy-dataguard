@@ -64,11 +64,15 @@ class FirewallVpnService : VpnService() {
     }
 
     private fun startFirewall() {
-        if (running.getAndSet(true)) return
+    val wasAlreadyRunning = running.getAndSet(true)
+    if (!wasAlreadyRunning) {
         prefsManager.setFirewallEnabled(true)
         registerNetworkCallback()
-        rebuildTunnel()
     }
+    // Toujours reconstruire le tunnel : c'est ce qui applique les nouvelles
+    // règles quand une app est cochée/décochée pendant que le service tourne déjà.
+    rebuildTunnel()
+}
 
     private fun stopFirewall() {
         running.set(false)
