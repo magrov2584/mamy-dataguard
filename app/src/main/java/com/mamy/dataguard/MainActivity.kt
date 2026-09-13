@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var prefsManager: PrefsManager
     private lateinit var adapter: AppListAdapter
+    private var allApps: List<AppInfo> = emptyList()
 
     private val vpnPrepareLauncher = registerForActivityResult(
         androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
@@ -60,7 +61,29 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnBatteryOptim.setOnClickListener { requestIgnoreBatteryOptimizations() }
 
+        binding.searchBar.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                filterApps(s?.toString().orEmpty())
+            }
+            override fun afterTextChanged(s: android.text.Editable?) {}
+        })
+
         loadInstalledApps()
+    }
+
+    /** Filtre la liste affichée par nom ou nom de paquet, sans perdre les règles déjà cochées. */
+    private fun filterApps(query: String) {
+        val trimmed = query.trim()
+        val filtered = if (trimmed.isEmpty()) {
+            allApps
+        } else {
+            allApps.filter {
+                it.label.contains(trimmed, ignoreCase = true) ||
+                    it.packageName.contains(trimmed, ignoreCase = true)
+            }
+        }
+        adapter.updateList(filtered)
     }
 
     private fun requestNotificationPermissionIfNeeded() {
@@ -128,6 +151,7 @@ class MainActivity : AppCompatActivity() {
             }
             .sortedBy { it.label.lowercase() }
 
+        allApps = appInfos
         adapter.updateList(appInfos)
     }
 }
